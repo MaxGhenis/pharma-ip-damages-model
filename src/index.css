@@ -111,6 +111,17 @@
     font-size: 0.875rem;
     padding: 0.5rem 0.75rem;
     transition: border-color 0.15s, box-shadow 0.15s;
+    text-align: center;
+  }
+
+  /* Hide number input spinners to save space */
+  .input-field::-webkit-outer-spin-button,
+  .input-field::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  .input-field[type="number"] {
+    -moz-appearance: textfield;
   }
 
   .input-field:focus {

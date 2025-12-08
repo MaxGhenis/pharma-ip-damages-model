@@ -165,7 +165,7 @@ export function TripleInput({
             value={(value.low * multiplier).toFixed(format === 'percent' ? 1 : 0)}
             onChange={(e) => handleChange('low', parseFloat(e.target.value) || 0)}
             step={step}
-            className="input-field w-full text-sm"
+            className="input-field w-full text-sm text-center"
             style={{ color: 'var(--accent-rose)' }}
           />
         </div>
@@ -176,7 +176,7 @@ export function TripleInput({
             value={(value.base * multiplier).toFixed(format === 'percent' ? 1 : 0)}
             onChange={(e) => handleChange('base', parseFloat(e.target.value) || 0)}
             step={step}
-            className="input-field w-full text-sm font-medium"
+            className="input-field w-full text-sm text-center font-medium"
             style={{ color: 'var(--accent-gold)' }}
           />
         </div>
@@ -187,7 +187,7 @@ export function TripleInput({
             value={(value.high * multiplier).toFixed(format === 'percent' ? 1 : 0)}
             onChange={(e) => handleChange('high', parseFloat(e.target.value) || 0)}
             step={step}
-            className="input-field w-full text-sm"
+            className="input-field w-full text-sm text-center"
             style={{ color: 'var(--accent-emerald)' }}
           />
         </div>
