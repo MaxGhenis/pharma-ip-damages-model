@@ -7,6 +7,7 @@ import { InputPanel } from './components/InputPanel';
 import { ResultsSummary } from './components/ResultsSummary';
 import { ExpandableSection } from './components/ExpandableSection';
 import { CalculationStepsList } from './components/CalculationStep';
+import { ReportView } from './components/ReportView';
 import {
   YearlyDamagesChart,
   MonteCarloChart,
@@ -14,6 +15,8 @@ import {
   SCurveChart,
 } from './components/Charts';
 import { formatCurrency } from './utils/uncertainty';
+import { generateReportContent } from './utils/reportGenerator';
+import { buildReportData } from './utils/reportDataBuilder';
 import './index.css';
 
 function App() {
@@ -31,6 +34,7 @@ function App() {
     runSensitivity: true,
     monteCarloIterations: 5000,
   });
+  const [showReport, setShowReport] = useState(false);
 
   const handleScenarioChange = useCallback((newScenario: DemoScenario) => {
     setScenario(newScenario);
@@ -53,6 +57,32 @@ function App() {
       setIsCalculating(false);
     }
   }, [inputs, options]);
+
+  const reportContent = useMemo(() => {
+    if (!results) return null;
+    const reportData = buildReportData(
+      results.summary,
+      inputs,
+      results.monteCarloResults,
+      scenario.name
+    );
+    return generateReportContent(reportData);
+  }, [results, inputs, scenario.name]);
+
+  const handlePrint = useCallback(() => {
+    window.print();
+  }, []);
+
+  // Show report view if active
+  if (showReport && reportContent) {
+    return (
+      <ReportView
+        report={reportContent}
+        onClose={() => setShowReport(false)}
+        onPrint={handlePrint}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--bg-primary)' }}>
@@ -135,7 +165,15 @@ function App() {
               <>
                 {/* Summary */}
                 <section>
-                  <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Damages Summary</h2>
+                  <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>Damages Summary</h2>
+                    <button
+                      onClick={() => setShowReport(true)}
+                      className="btn-primary"
+                    >
+                      Generate Report
+                    </button>
+                  </div>
                   <ResultsSummary
                     summary={results.summary}
                     monteCarloResults={results.monteCarloResults}
