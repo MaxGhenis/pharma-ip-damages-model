@@ -9,38 +9,48 @@ interface ScenarioSelectorProps {
 export function ScenarioSelector({ selectedScenario, onSelect }: ScenarioSelectorProps) {
   return (
     <div className="space-y-4">
-      <h2 className="text-lg font-semibold text-gray-800">Select Scenario</h2>
+      <h2 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>Select Scenario</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {allScenarios.map((scenario) => (
-          <button
-            key={scenario.id}
-            onClick={() => onSelect(scenario)}
-            className={`text-left p-4 rounded-lg border-2 transition-all ${
-              selectedScenario.id === scenario.id
-                ? 'border-sky-500 bg-sky-50'
-                : 'border-gray-200 hover:border-gray-300 bg-white'
-            }`}
-          >
-            <div className="flex items-start justify-between">
-              <h3 className="font-semibold text-gray-900">{scenario.name}</h3>
-              <CaseTypeBadge type={scenario.caseType} />
-            </div>
-            <p className="mt-2 text-sm text-gray-600 line-clamp-3">{scenario.description}</p>
-            {scenario.realCaseReference && (
-              <p className="mt-2 text-xs text-gray-400 italic">{scenario.realCaseReference}</p>
-            )}
-          </button>
-        ))}
+        {allScenarios.map((scenario) => {
+          const isSelected = selectedScenario.id === scenario.id;
+          return (
+            <button
+              key={scenario.id}
+              onClick={() => onSelect(scenario)}
+              className="card text-left p-4 transition-all duration-200"
+              style={{
+                borderColor: isSelected ? 'var(--accent-gold)' : 'var(--border-subtle)',
+                background: isSelected ? 'var(--bg-tertiary)' : 'var(--bg-secondary)',
+                boxShadow: isSelected ? 'var(--shadow-glow)' : 'none',
+              }}
+            >
+              <div className="flex items-start justify-between gap-2">
+                <h3 className="font-semibold" style={{ color: isSelected ? 'var(--accent-gold)' : 'var(--text-primary)' }}>
+                  {scenario.name}
+                </h3>
+                <CaseTypeBadge type={scenario.caseType} />
+              </div>
+              <p className="mt-2 text-sm line-clamp-3" style={{ color: 'var(--text-secondary)' }}>
+                {scenario.description}
+              </p>
+              {scenario.realCaseReference && (
+                <p className="mt-2 text-xs italic" style={{ color: 'var(--text-muted)' }}>
+                  {scenario.realCaseReference}
+                </p>
+              )}
+            </button>
+          );
+        })}
       </div>
     </div>
   );
 }
 
 function CaseTypeBadge({ type }: { type: 'patent' | 'trade_secret' | 'hatch_waxman' }) {
-  const styles = {
-    patent: 'bg-blue-100 text-blue-800',
-    trade_secret: 'bg-purple-100 text-purple-800',
-    hatch_waxman: 'bg-green-100 text-green-800',
+  const badgeClasses: Record<string, string> = {
+    patent: 'badge-blue',
+    trade_secret: 'badge-rose',
+    hatch_waxman: 'badge-emerald',
   };
 
   const labels = {
@@ -50,7 +60,7 @@ function CaseTypeBadge({ type }: { type: 'patent' | 'trade_secret' | 'hatch_waxm
   };
 
   return (
-    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${styles[type]}`}>
+    <span className={`badge ${badgeClasses[type]}`}>
       {labels[type]}
     </span>
   );

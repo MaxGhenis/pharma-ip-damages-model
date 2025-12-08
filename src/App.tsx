@@ -55,12 +55,20 @@ function App() {
   }, [inputs, options]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen" style={{ background: 'var(--bg-primary)' }}>
       {/* Header */}
-      <header className="bg-gradient-to-r from-sky-700 to-sky-900 text-white">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <h1 className="text-2xl font-bold">Pharma/Biotech IP Damages Calculator</h1>
-          <p className="mt-1 text-sky-200">
+      <header className="border-b" style={{ borderColor: 'var(--border-subtle)', background: 'var(--bg-secondary)' }}>
+        <div className="max-w-7xl mx-auto px-6 py-8">
+          <div className="flex items-center gap-3 mb-2">
+            <span className="badge badge-gold">IP DAMAGES</span>
+            <span className="text-xs uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>
+              Economic Analysis Platform
+            </span>
+          </div>
+          <h1 className="font-display text-4xl font-semibold tracking-tight" style={{ color: 'var(--text-primary)' }}>
+            Pharma/Biotech IP Damages Calculator
+          </h1>
+          <p className="mt-3 text-sm" style={{ color: 'var(--text-secondary)' }}>
             DCF-based damages model with uncertainty analysis for patent and trade secret litigation
           </p>
         </div>
@@ -74,9 +82,9 @@ function App() {
 
         {/* Analysis Options */}
         <section className="mb-8">
-          <div className="bg-white rounded-lg border border-gray-200 p-4">
-            <h3 className="font-semibold text-gray-800 mb-3">Analysis Options</h3>
-            <div className="flex flex-wrap gap-4">
+          <div className="card p-5">
+            <h3 className="data-label mb-4">Analysis Options</h3>
+            <div className="flex flex-wrap gap-5">
               {[
                 { key: 'includeLostProfits', label: 'Lost Profits' },
                 { key: 'includeReasonableRoyalty', label: 'Reasonable Royalty' },
@@ -87,16 +95,18 @@ function App() {
                 { key: 'runMonteCarlo', label: 'Monte Carlo' },
                 { key: 'runSensitivity', label: 'Sensitivity' },
               ].map(({ key, label }) => (
-                <label key={key} className="flex items-center gap-2 cursor-pointer">
+                <label key={key} className="flex items-center gap-2 cursor-pointer group">
                   <input
                     type="checkbox"
                     checked={options[key as keyof typeof options] as boolean}
                     onChange={(e) =>
                       setOptions((prev) => ({ ...prev, [key]: e.target.checked }))
                     }
-                    className="rounded border-gray-300 text-sky-600 focus:ring-sky-500"
+                    className="checkbox-custom"
                   />
-                  <span className="text-sm text-gray-700">{label}</span>
+                  <span className="text-sm transition-colors" style={{ color: 'var(--text-secondary)' }}>
+                    {label}
+                  </span>
                 </label>
               ))}
             </div>
@@ -107,7 +117,7 @@ function App() {
           {/* Input Panel */}
           <div className="lg:col-span-1">
             <div className="sticky top-4">
-              <h2 className="text-lg font-semibold text-gray-800 mb-4">Model Inputs</h2>
+              <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Model Inputs</h2>
               <InputPanel inputs={inputs} onChange={setInputs} />
             </div>
           </div>
@@ -116,8 +126,8 @@ function App() {
           <div className="lg:col-span-2 space-y-6">
             {isCalculating && (
               <div className="flex items-center justify-center py-12">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-600"></div>
-                <span className="ml-3 text-gray-600">Calculating...</span>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2" style={{ borderColor: 'var(--accent-gold)' }}></div>
+                <span className="ml-3" style={{ color: 'var(--text-secondary)' }}>Calculating...</span>
               </div>
             )}
 
@@ -125,7 +135,7 @@ function App() {
               <>
                 {/* Summary */}
                 <section>
-                  <h2 className="text-lg font-semibold text-gray-800 mb-4">Damages Summary</h2>
+                  <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Damages Summary</h2>
                   <ResultsSummary
                     summary={results.summary}
                     monteCarloResults={results.monteCarloResults}
@@ -134,7 +144,7 @@ function App() {
 
                 {/* Charts */}
                 <section className="space-y-4">
-                  <h2 className="text-lg font-semibold text-gray-800">Visualizations</h2>
+                  <h2 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>Visualizations</h2>
 
                   <ExpandableSection title="Yearly Damages Breakdown" defaultOpen>
                     <YearlyDamagesChart data={results.summary.yearlyBreakdown} />
@@ -147,27 +157,27 @@ function App() {
                         title="Total Damages Distribution"
                       />
                       <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                        <div className="bg-gray-50 p-3 rounded">
-                          <span className="text-gray-500">Mean</span>
-                          <p className="font-semibold">
+                        <div className="card p-3">
+                          <span className="data-label">Mean</span>
+                          <p className="data-value mt-1" style={{ color: 'var(--text-primary)' }}>
                             {formatCurrency(results.monteCarloResults.totalDamages.mean)}
                           </p>
                         </div>
-                        <div className="bg-gray-50 p-3 rounded">
-                          <span className="text-gray-500">Std Dev</span>
-                          <p className="font-semibold">
+                        <div className="card p-3">
+                          <span className="data-label">Std Dev</span>
+                          <p className="data-value mt-1" style={{ color: 'var(--text-secondary)' }}>
                             {formatCurrency(results.monteCarloResults.totalDamages.std)}
                           </p>
                         </div>
-                        <div className="bg-gray-50 p-3 rounded">
-                          <span className="text-gray-500">5th %ile</span>
-                          <p className="font-semibold">
+                        <div className="card p-3">
+                          <span className="data-label">5th %ile</span>
+                          <p className="data-value mt-1" style={{ color: 'var(--accent-rose)' }}>
                             {formatCurrency(results.monteCarloResults.totalDamages.percentile5)}
                           </p>
                         </div>
-                        <div className="bg-gray-50 p-3 rounded">
-                          <span className="text-gray-500">95th %ile</span>
-                          <p className="font-semibold">
+                        <div className="card p-3">
+                          <span className="data-label">95th %ile</span>
+                          <p className="data-value mt-1" style={{ color: 'var(--accent-emerald)' }}>
                             {formatCurrency(results.monteCarloResults.totalDamages.percentile95)}
                           </p>
                         </div>
@@ -179,32 +189,32 @@ function App() {
                     <ExpandableSection title="Sensitivity Analysis (Tornado Chart)">
                       <SensitivityChart results={results.sensitivityResults} />
                       <div className="mt-4">
-                        <h4 className="font-medium text-gray-700 mb-2">Parameter Elasticities</h4>
+                        <h4 className="data-label mb-3">Parameter Elasticities</h4>
                         <div className="overflow-x-auto">
-                          <table className="min-w-full text-sm">
+                          <table className="data-table">
                             <thead>
-                              <tr className="border-b">
-                                <th className="text-left py-2">Parameter</th>
-                                <th className="text-right py-2">Base</th>
-                                <th className="text-right py-2">Low</th>
-                                <th className="text-right py-2">High</th>
-                                <th className="text-right py-2">Elasticity</th>
+                              <tr>
+                                <th>Parameter</th>
+                                <th className="text-right">Base</th>
+                                <th className="text-right">Low</th>
+                                <th className="text-right">High</th>
+                                <th className="text-right">Elasticity</th>
                               </tr>
                             </thead>
                             <tbody>
                               {results.sensitivityResults.slice(0, 6).map((r) => (
-                                <tr key={r.parameter} className="border-b">
-                                  <td className="py-2">{r.parameter}</td>
+                                <tr key={r.parameter}>
+                                  <td style={{ color: 'var(--text-secondary)' }}>{r.parameter}</td>
                                   <td className="text-right">
                                     {r.baseValue > 1 ? r.baseValue.toFixed(0) : r.baseValue.toFixed(2)}
                                   </td>
-                                  <td className="text-right text-red-600">
+                                  <td className="text-right" style={{ color: 'var(--accent-rose)' }}>
                                     {formatCurrency(r.lowDamages)}
                                   </td>
-                                  <td className="text-right text-green-600">
+                                  <td className="text-right" style={{ color: 'var(--accent-emerald)' }}>
                                     {formatCurrency(r.highDamages)}
                                   </td>
-                                  <td className="text-right font-medium">
+                                  <td className="text-right font-medium" style={{ color: 'var(--accent-gold)' }}>
                                     {r.elasticity.toFixed(2)}
                                   </td>
                                 </tr>
@@ -219,9 +229,9 @@ function App() {
                   {results.scurveDetail && (
                     <ExpandableSection title="S-Curve / Bass Diffusion">
                       <SCurveChart data={results.scurveDetail.yearlyAdoption} />
-                      <div className="mt-4 text-sm text-gray-600">
-                        <p>Time to 50% adoption: {results.scurveDetail.timeToHalfAdoption} years</p>
-                        <p>Time to 90% adoption: {results.scurveDetail.timeToFullAdoption} years</p>
+                      <div className="mt-4 text-sm" style={{ color: 'var(--text-secondary)' }}>
+                        <p>Time to 50% adoption: <span className="data-value" style={{ color: 'var(--accent-gold)' }}>{results.scurveDetail.timeToHalfAdoption}</span> years</p>
+                        <p>Time to 90% adoption: <span className="data-value" style={{ color: 'var(--accent-gold)' }}>{results.scurveDetail.timeToFullAdoption}</span> years</p>
                       </div>
                     </ExpandableSection>
                   )}
@@ -229,7 +239,7 @@ function App() {
 
                 {/* Detailed Calculations */}
                 <section className="space-y-4">
-                  <h2 className="text-lg font-semibold text-gray-800">Detailed Calculations</h2>
+                  <h2 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>Detailed Calculations</h2>
 
                   <ExpandableSection
                     title="Lost Profits Analysis"
@@ -250,14 +260,16 @@ function App() {
                       <CalculationStepsList
                         steps={results.reasonableRoyaltyDetail.calculationSteps}
                       />
-                      <div className="mt-4 p-3 bg-gray-50 rounded text-sm">
-                        <p>
-                          <strong>Methods Used:</strong>{' '}
-                          {results.reasonableRoyaltyDetail.methodsUsed.join(', ')}
+                      <div className="mt-4 p-4 card text-sm">
+                        <p style={{ color: 'var(--text-secondary)' }}>
+                          <span className="data-label mr-2">Methods Used:</span>
+                          <span className="data-value">{results.reasonableRoyaltyDetail.methodsUsed.join(', ')}</span>
                         </p>
-                        <p>
-                          <strong>Royalty Rate:</strong>{' '}
-                          {(results.reasonableRoyaltyDetail.royaltyRate * 100).toFixed(2)}%
+                        <p className="mt-2" style={{ color: 'var(--text-secondary)' }}>
+                          <span className="data-label mr-2">Royalty Rate:</span>
+                          <span className="data-value" style={{ color: 'var(--accent-emerald)' }}>
+                            {(results.reasonableRoyaltyDetail.royaltyRate * 100).toFixed(2)}%
+                          </span>
                         </p>
                       </div>
                     </ExpandableSection>
@@ -268,21 +280,27 @@ function App() {
                       title="Rubinstein Bargaining Model"
                       subtitle="Hypothetical negotiation analysis"
                       badge={`${(results.rubinsteinDetail.royaltyRate * 100).toFixed(2)}%`}
-                      badgeColor="yellow"
+                      badgeColor="gold"
                     >
                       <CalculationStepsList steps={results.rubinsteinDetail.calculationSteps} />
-                      <div className="mt-4 p-3 bg-yellow-50 rounded text-sm">
-                        <p>
-                          <strong>Plaintiff Share:</strong>{' '}
-                          {formatCurrency(results.rubinsteinDetail.plaintiffShare)}
+                      <div className="mt-4 p-4 card text-sm space-y-2">
+                        <p style={{ color: 'var(--text-secondary)' }}>
+                          <span className="data-label mr-2">Plaintiff Share:</span>
+                          <span className="data-value" style={{ color: 'var(--accent-gold)' }}>
+                            {formatCurrency(results.rubinsteinDetail.plaintiffShare)}
+                          </span>
                         </p>
-                        <p>
-                          <strong>Defendant Share:</strong>{' '}
-                          {formatCurrency(results.rubinsteinDetail.defendantShare)}
+                        <p style={{ color: 'var(--text-secondary)' }}>
+                          <span className="data-label mr-2">Defendant Share:</span>
+                          <span className="data-value">
+                            {formatCurrency(results.rubinsteinDetail.defendantShare)}
+                          </span>
                         </p>
-                        <p>
-                          <strong>Total Surplus:</strong>{' '}
-                          {formatCurrency(results.rubinsteinDetail.totalSurplus)}
+                        <p style={{ color: 'var(--text-secondary)' }}>
+                          <span className="data-label mr-2">Total Surplus:</span>
+                          <span className="data-value">
+                            {formatCurrency(results.rubinsteinDetail.totalSurplus)}
+                          </span>
                         </p>
                       </div>
                     </ExpandableSection>
@@ -295,20 +313,20 @@ function App() {
                     >
                       <CalculationStepsList steps={results.shapleyDetail.calculationSteps} />
                       <div className="mt-4">
-                        <h4 className="font-medium text-gray-700 mb-2">Patent Allocations</h4>
-                        <table className="min-w-full text-sm">
+                        <h4 className="data-label mb-3">Patent Allocations</h4>
+                        <table className="data-table">
                           <thead>
-                            <tr className="border-b">
-                              <th className="text-left py-2">Patent</th>
-                              <th className="text-right py-2">Shapley Value</th>
-                              <th className="text-right py-2">Share of Total</th>
+                            <tr>
+                              <th>Patent</th>
+                              <th className="text-right">Shapley Value</th>
+                              <th className="text-right">Share of Total</th>
                             </tr>
                           </thead>
                           <tbody>
                             {results.shapleyDetail.allocations.map((a) => (
-                              <tr key={a.patentId} className="border-b">
-                                <td className="py-2">{a.patentName}</td>
-                                <td className="text-right">{formatCurrency(a.shapleyValue)}</td>
+                              <tr key={a.patentId}>
+                                <td style={{ color: 'var(--text-secondary)' }}>{a.patentName}</td>
+                                <td className="text-right" style={{ color: 'var(--accent-gold)' }}>{formatCurrency(a.shapleyValue)}</td>
                                 <td className="text-right">
                                   {(a.shareOfTotal * 100).toFixed(1)}%
                                 </td>
@@ -328,18 +346,24 @@ function App() {
                       badgeColor="red"
                     >
                       <CalculationStepsList steps={results.tradeSecretDetail.calculationSteps} />
-                      <div className="mt-4 p-3 bg-red-50 rounded text-sm">
-                        <p>
-                          <strong>Head Start Damages:</strong>{' '}
-                          {formatCurrency(results.tradeSecretDetail.headStartDamages)}
+                      <div className="mt-4 p-4 card text-sm space-y-2" style={{ borderColor: 'rgba(248, 113, 113, 0.3)' }}>
+                        <p style={{ color: 'var(--text-secondary)' }}>
+                          <span className="data-label mr-2">Head Start Damages:</span>
+                          <span className="data-value" style={{ color: 'var(--accent-rose)' }}>
+                            {formatCurrency(results.tradeSecretDetail.headStartDamages)}
+                          </span>
                         </p>
-                        <p>
-                          <strong>Development Costs Saved:</strong>{' '}
-                          {formatCurrency(results.tradeSecretDetail.developmentCostsSaved)}
+                        <p style={{ color: 'var(--text-secondary)' }}>
+                          <span className="data-label mr-2">Development Costs Saved:</span>
+                          <span className="data-value">
+                            {formatCurrency(results.tradeSecretDetail.developmentCostsSaved)}
+                          </span>
                         </p>
-                        <p>
-                          <strong>Permanent Market Loss:</strong>{' '}
-                          {formatCurrency(results.tradeSecretDetail.permanentMarketLoss)}
+                        <p style={{ color: 'var(--text-secondary)' }}>
+                          <span className="data-label mr-2">Permanent Market Loss:</span>
+                          <span className="data-value">
+                            {formatCurrency(results.tradeSecretDetail.permanentMarketLoss)}
+                          </span>
                         </p>
                       </div>
                     </ExpandableSection>
@@ -352,33 +376,48 @@ function App() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-gray-800 text-gray-400 mt-16">
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <footer className="mt-16 border-t" style={{ background: 'var(--bg-secondary)', borderColor: 'var(--border-subtle)' }}>
+        <div className="max-w-7xl mx-auto px-6 py-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
             <div>
-              <h3 className="text-white font-semibold mb-3">About This Tool</h3>
-              <p className="text-sm">
+              <h3 className="font-display text-lg font-semibold mb-4" style={{ color: 'var(--accent-gold)' }}>About This Tool</h3>
+              <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
                 This calculator implements standard economic methodologies for calculating
                 damages in pharmaceutical/biotech IP litigation, including lost profits,
                 reasonable royalty, Rubinstein bargaining, and Shapley value allocation.
               </p>
-              <p className="text-sm mt-2">
+              <p className="text-sm mt-3" style={{ color: 'var(--text-muted)' }}>
                 For educational and illustrative purposes only. Not legal or expert advice.
               </p>
             </div>
             <div>
-              <h3 className="text-white font-semibold mb-3">References</h3>
-              <ul className="text-sm space-y-1">
-                <li>Panduit Corp. v. Stahlin Bros. Fibre Works (1978)</li>
-                <li>Georgia-Pacific Corp. v. U.S. Plywood Corp. (1970)</li>
-                <li>Rubinstein, A. (1982). Perfect Equilibrium in a Bargaining Model</li>
-                <li>Shapley, L.S. (1953). A Value for n-Person Games</li>
-                <li>Bass, F.M. (1969). A New Product Growth Model</li>
+              <h3 className="font-display text-lg font-semibold mb-4" style={{ color: 'var(--accent-gold)' }}>References</h3>
+              <ul className="text-sm space-y-2" style={{ color: 'var(--text-secondary)' }}>
+                <li className="flex items-start gap-2">
+                  <span style={{ color: 'var(--accent-gold-dim)' }}>-</span>
+                  Panduit Corp. v. Stahlin Bros. Fibre Works (1978)
+                </li>
+                <li className="flex items-start gap-2">
+                  <span style={{ color: 'var(--accent-gold-dim)' }}>-</span>
+                  Georgia-Pacific Corp. v. U.S. Plywood Corp. (1970)
+                </li>
+                <li className="flex items-start gap-2">
+                  <span style={{ color: 'var(--accent-gold-dim)' }}>-</span>
+                  Rubinstein, A. (1982). Perfect Equilibrium in a Bargaining Model
+                </li>
+                <li className="flex items-start gap-2">
+                  <span style={{ color: 'var(--accent-gold-dim)' }}>-</span>
+                  Shapley, L.S. (1953). A Value for n-Person Games
+                </li>
+                <li className="flex items-start gap-2">
+                  <span style={{ color: 'var(--accent-gold-dim)' }}>-</span>
+                  Bass, F.M. (1969). A New Product Growth Model
+                </li>
               </ul>
             </div>
           </div>
-          <div className="border-t border-gray-700 mt-8 pt-8 text-center text-sm">
-            <p>Built with React, TypeScript, and Tailwind CSS</p>
+          <div className="border-t mt-10 pt-8 text-center text-xs" style={{ borderColor: 'var(--border-subtle)', color: 'var(--text-muted)' }}>
+            <p className="font-mono">Built with React, TypeScript, and Tailwind CSS</p>
           </div>
         </div>
       </footer>

@@ -28,11 +28,11 @@ export function NumberInput({
 }: NumberInputProps) {
   return (
     <div className="space-y-1">
-      <label className="block text-sm font-medium text-gray-700">{label}</label>
-      <div className="relative rounded-md shadow-sm">
+      <label className="data-label block">{label}</label>
+      <div className="relative">
         {prefix && (
           <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-            <span className="text-gray-500 sm:text-sm">{prefix}</span>
+            <span style={{ color: 'var(--text-muted)' }} className="text-sm">{prefix}</span>
           </div>
         )}
         <input
@@ -43,17 +43,16 @@ export function NumberInput({
           max={max}
           step={step}
           disabled={disabled}
-          className={`block w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 sm:text-sm ${
-            prefix ? 'pl-7' : ''
-          } ${suffix ? 'pr-12' : ''} ${disabled ? 'bg-gray-100' : ''}`}
+          className={`input-field w-full ${prefix ? 'pl-7' : ''} ${suffix ? 'pr-12' : ''}`}
+          style={disabled ? { opacity: 0.5 } : undefined}
         />
         {suffix && (
           <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-            <span className="text-gray-500 sm:text-sm">{suffix}</span>
+            <span style={{ color: 'var(--text-muted)' }} className="text-sm">{suffix}</span>
           </div>
         )}
       </div>
-      {helpText && <p className="text-xs text-gray-500">{helpText}</p>}
+      {helpText && <p className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>{helpText}</p>}
     </div>
   );
 }
@@ -105,8 +104,8 @@ export function RangeInput({
   return (
     <div className="space-y-2">
       <div className="flex justify-between items-center">
-        <label className="block text-sm font-medium text-gray-700">{label}</label>
-        <span className="text-sm font-semibold text-sky-600">{formatValue(value.base)}</span>
+        <label className="data-label">{label}</label>
+        <span className="data-value text-sm" style={{ color: 'var(--accent-gold)' }}>{formatValue(value.base)}</span>
       </div>
 
       <input
@@ -116,15 +115,15 @@ export function RangeInput({
         step={step}
         value={value.base}
         onChange={handleSliderChange}
-        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-sky-600"
+        className="w-full"
       />
 
-      <div className="flex justify-between text-xs text-gray-500">
+      <div className="flex justify-between text-xs" style={{ color: 'var(--text-muted)' }}>
         <span>Low: {formatValue(value.low)}</span>
         <span>High: {formatValue(value.high)}</span>
       </div>
 
-      {helpText && <p className="text-xs text-gray-500">{helpText}</p>}
+      {helpText && <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{helpText}</p>}
     </div>
   );
 }
@@ -157,40 +156,43 @@ export function TripleInput({
 
   return (
     <div className="space-y-2">
-      <label className="block text-sm font-medium text-gray-700">{label}</label>
+      <label className="data-label">{label}</label>
       <div className="grid grid-cols-3 gap-2">
         <div>
-          <label className="block text-xs text-gray-500 mb-1">Low</label>
+          <label className="block text-xs mb-1" style={{ color: 'var(--text-muted)' }}>Low</label>
           <input
             type="number"
             value={(value.low * multiplier).toFixed(format === 'percent' ? 1 : 0)}
             onChange={(e) => handleChange('low', parseFloat(e.target.value) || 0)}
             step={step}
-            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 text-sm"
+            className="input-field w-full text-sm"
+            style={{ color: 'var(--accent-rose)' }}
           />
         </div>
         <div>
-          <label className="block text-xs text-gray-500 mb-1">Base</label>
+          <label className="block text-xs mb-1" style={{ color: 'var(--text-muted)' }}>Base</label>
           <input
             type="number"
             value={(value.base * multiplier).toFixed(format === 'percent' ? 1 : 0)}
             onChange={(e) => handleChange('base', parseFloat(e.target.value) || 0)}
             step={step}
-            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 text-sm font-medium"
+            className="input-field w-full text-sm font-medium"
+            style={{ color: 'var(--accent-gold)' }}
           />
         </div>
         <div>
-          <label className="block text-xs text-gray-500 mb-1">High</label>
+          <label className="block text-xs mb-1" style={{ color: 'var(--text-muted)' }}>High</label>
           <input
             type="number"
             value={(value.high * multiplier).toFixed(format === 'percent' ? 1 : 0)}
             onChange={(e) => handleChange('high', parseFloat(e.target.value) || 0)}
             step={step}
-            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 text-sm"
+            className="input-field w-full text-sm"
+            style={{ color: 'var(--accent-emerald)' }}
           />
         </div>
       </div>
-      {helpText && <p className="text-xs text-gray-500 mt-1">{helpText}</p>}
+      {helpText && <p className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>{helpText}</p>}
     </div>
   );
 }

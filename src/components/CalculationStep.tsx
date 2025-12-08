@@ -15,7 +15,7 @@ export function CalculationStepComponent({ step, depth = 0 }: CalculationStepPro
 
   return (
     <div
-      className="border-l-2 border-sky-200 bg-gradient-to-r from-sky-50/50 to-transparent"
+      className="calc-step"
       style={{ marginLeft: `${indent}px` }}
     >
       <div className="py-2 px-3">
@@ -25,10 +25,12 @@ export function CalculationStepComponent({ step, depth = 0 }: CalculationStepPro
               {hasChildren && (
                 <button
                   onClick={() => setIsExpanded(!isExpanded)}
-                  className="text-gray-400 hover:text-gray-600"
+                  style={{ color: 'var(--text-muted)' }}
+                  className="hover:opacity-80 transition-opacity"
                 >
                   <svg
-                    className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-90' : ''}`}
+                    className="w-4 h-4 transition-transform duration-200"
+                    style={{ transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)' }}
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -37,11 +39,19 @@ export function CalculationStepComponent({ step, depth = 0 }: CalculationStepPro
                   </svg>
                 </button>
               )}
-              <h4 className="font-medium text-gray-800 text-sm">{step.label}</h4>
+              <h4 className="font-medium text-sm" style={{ color: 'var(--text-primary)' }}>{step.label}</h4>
             </div>
 
             {step.formula && (
-              <div className="mt-1 font-mono text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded inline-block">
+              <div
+                className="mt-1 font-mono text-xs px-2 py-1 inline-block"
+                style={{
+                  background: 'var(--bg-primary)',
+                  color: 'var(--accent-gold)',
+                  border: '1px solid var(--border-subtle)',
+                  borderRadius: '2px'
+                }}
+              >
                 {step.formula}
               </div>
             )}
@@ -50,8 +60,8 @@ export function CalculationStepComponent({ step, depth = 0 }: CalculationStepPro
               <div className="mt-2 space-y-1">
                 {step.inputs.map((input, i) => (
                   <div key={i} className="flex items-center gap-2 text-xs">
-                    <span className="text-gray-500">{input.name}:</span>
-                    <span className="font-medium text-gray-700">
+                    <span style={{ color: 'var(--text-muted)' }}>{input.name}:</span>
+                    <span className="font-mono font-medium" style={{ color: 'var(--text-secondary)' }}>
                       {typeof input.value === 'number'
                         ? input.value > 1000
                           ? formatCurrency(input.value)
@@ -59,7 +69,7 @@ export function CalculationStepComponent({ step, depth = 0 }: CalculationStepPro
                         : input.value}
                     </span>
                     {input.source && (
-                      <span className="text-gray-400 italic">({input.source})</span>
+                      <span className="italic" style={{ color: 'var(--text-muted)' }}>({input.source})</span>
                     )}
                   </div>
                 ))}
@@ -67,18 +77,18 @@ export function CalculationStepComponent({ step, depth = 0 }: CalculationStepPro
             )}
 
             {step.notes && (
-              <p className="mt-2 text-xs text-gray-500 italic">{step.notes}</p>
+              <p className="mt-2 text-xs italic" style={{ color: 'var(--text-muted)' }}>{step.notes}</p>
             )}
           </div>
 
           <div className="text-right">
-            <div className="text-lg font-bold text-sky-700">
+            <div className="data-value text-lg" style={{ color: 'var(--accent-gold)' }}>
               {typeof step.result === 'number' && step.result > 1000
                 ? formatCurrency(step.result)
                 : step.result?.toLocaleString(undefined, { maximumFractionDigits: 4 })}
             </div>
             {step.resultUncertainty && (
-              <div className="text-xs text-gray-500">
+              <div className="text-xs font-mono" style={{ color: 'var(--text-muted)' }}>
                 {formatCurrency(step.resultUncertainty.low)} - {formatCurrency(step.resultUncertainty.high)}
               </div>
             )}
@@ -105,7 +115,7 @@ interface CalculationStepsListProps {
 export function CalculationStepsList({ steps, title }: CalculationStepsListProps) {
   return (
     <div className="space-y-2">
-      {title && <h3 className="font-semibold text-gray-700 mb-3">{title}</h3>}
+      {title && <h3 className="data-label mb-3">{title}</h3>}
       {steps.map((step, i) => (
         <CalculationStepComponent key={step.id || i} step={step} />
       ))}

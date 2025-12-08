@@ -69,24 +69,32 @@ export function ResultsSummary({ summary, monteCarloResults }: ResultsSummaryPro
 
       {/* Monte Carlo confidence intervals */}
       {monteCarloResults && (
-        <div className="bg-sky-50 rounded-lg p-4">
-          <h3 className="font-semibold text-gray-800 mb-3">Monte Carlo Confidence Intervals</h3>
+        <div className="card p-5">
+          <h3 className="data-label mb-4">Monte Carlo Confidence Intervals</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
             <div>
-              <span className="text-gray-500">5th Percentile</span>
-              <p className="font-semibold">{formatCurrency(monteCarloResults.totalDamages.percentile5)}</p>
+              <span className="data-label">5th Percentile</span>
+              <p className="data-value text-lg mt-1" style={{ color: 'var(--accent-rose)' }}>
+                {formatCurrency(monteCarloResults.totalDamages.percentile5)}
+              </p>
             </div>
             <div>
-              <span className="text-gray-500">Median (50th)</span>
-              <p className="font-semibold">{formatCurrency(monteCarloResults.totalDamages.median)}</p>
+              <span className="data-label">Median (50th)</span>
+              <p className="data-value text-lg mt-1" style={{ color: 'var(--text-primary)' }}>
+                {formatCurrency(monteCarloResults.totalDamages.median)}
+              </p>
             </div>
             <div>
-              <span className="text-gray-500">Mean</span>
-              <p className="font-semibold">{formatCurrency(monteCarloResults.totalDamages.mean)}</p>
+              <span className="data-label">Mean</span>
+              <p className="data-value text-lg mt-1" style={{ color: 'var(--text-primary)' }}>
+                {formatCurrency(monteCarloResults.totalDamages.mean)}
+              </p>
             </div>
             <div>
-              <span className="text-gray-500">95th Percentile</span>
-              <p className="font-semibold">{formatCurrency(monteCarloResults.totalDamages.percentile95)}</p>
+              <span className="data-label">95th Percentile</span>
+              <p className="data-value text-lg mt-1" style={{ color: 'var(--accent-emerald)' }}>
+                {formatCurrency(monteCarloResults.totalDamages.percentile95)}
+              </p>
             </div>
           </div>
         </div>
@@ -107,26 +115,27 @@ interface SummaryCardProps {
 function SummaryCard({ title, value, low, high, isPrimary = false, monteCarlo }: SummaryCardProps) {
   return (
     <div
-      className={`rounded-lg p-4 ${
-        isPrimary
-          ? 'bg-gradient-to-br from-sky-600 to-sky-700 text-white'
-          : 'bg-white border border-gray-200'
-      }`}
+      className={isPrimary ? 'card-elevated p-5' : 'card p-5'}
+      style={isPrimary ? {
+        background: 'linear-gradient(135deg, var(--bg-tertiary), var(--bg-elevated))',
+        borderColor: 'var(--accent-gold-dim)'
+      } : undefined}
     >
-      <h3 className={`text-sm font-medium ${isPrimary ? 'text-sky-100' : 'text-gray-500'}`}>
-        {title}
-      </h3>
-      <p className={`text-2xl font-bold mt-1 ${isPrimary ? 'text-white' : 'text-gray-900'}`}>
+      <h3 className="data-label">{title}</h3>
+      <p
+        className="data-value text-2xl mt-2"
+        style={{ color: isPrimary ? 'var(--accent-gold)' : 'var(--text-primary)' }}
+      >
         {formatCurrency(value)}
       </p>
       {(low !== undefined && high !== undefined) && (
-        <p className={`text-xs mt-1 ${isPrimary ? 'text-sky-200' : 'text-gray-500'}`}>
+        <p className="text-xs mt-2" style={{ color: 'var(--text-muted)' }}>
           Range: {formatCurrency(low)} - {formatCurrency(high)}
         </p>
       )}
       {monteCarlo && (
-        <div className={`mt-2 pt-2 border-t ${isPrimary ? 'border-sky-500' : 'border-gray-100'}`}>
-          <p className={`text-xs ${isPrimary ? 'text-sky-200' : 'text-gray-500'}`}>
+        <div className="mt-3 pt-3" style={{ borderTop: '1px solid var(--border-subtle)' }}>
+          <p className="text-xs font-mono" style={{ color: 'var(--text-muted)' }}>
             90% CI: {formatCurrency(monteCarlo.percentile5)} - {formatCurrency(monteCarlo.percentile95)}
           </p>
         </div>
@@ -144,12 +153,14 @@ interface MetricCardProps {
 
 function MetricCard({ title, value, subtitle, isPercent = false }: MetricCardProps) {
   return (
-    <div className="bg-gray-50 rounded-lg p-3">
-      <h4 className="text-xs font-medium text-gray-500">{title}</h4>
-      <p className="text-lg font-semibold text-gray-900 mt-1">
+    <div className="card p-4">
+      <h4 className="data-label">{title}</h4>
+      <p className="data-value text-lg mt-1" style={{ color: 'var(--text-primary)' }}>
         {isPercent ? `${(value * 100).toFixed(2)}%` : formatCurrency(value)}
       </p>
-      {subtitle && <p className="text-xs text-gray-400">{subtitle}</p>}
+      {subtitle && (
+        <p className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>{subtitle}</p>
+      )}
     </div>
   );
 }
