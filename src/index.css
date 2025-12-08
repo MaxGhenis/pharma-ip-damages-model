@@ -1,0 +1,41 @@
+@import "tailwindcss";
+
+@layer base {
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  body {
+    @apply bg-gray-50 text-gray-900 m-0;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-white rounded-lg shadow-md p-6 border border-gray-200;
+  }
+
+  .input-field {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm;
+  }
+
+  .input-field:focus {
+    @apply outline-none ring-2 ring-sky-500 border-sky-500;
+  }
+
+  .btn-primary {
+    @apply px-4 py-2 bg-sky-600 text-white rounded-md transition-colors;
+  }
+
+  .btn-primary:hover {
+    @apply bg-sky-700;
+  }
+
+  .calculation-step {
+    @apply pl-4 border-l-2 border-sky-200 py-2 my-2;
+  }
+
+  .formula {
+    @apply font-mono text-sm bg-gray-100 px-2 py-1 rounded;
+  }
+}
