@@ -5,7 +5,8 @@ import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  base: '/pharma-ip-damages-model/',
+  // Use root path for Netlify, subdirectory for GitHub Pages
+  base: process.env.NETLIFY ? '/' : '/pharma-ip-damages-model/',
   test: {
     globals: true,
     environment: 'jsdom',
