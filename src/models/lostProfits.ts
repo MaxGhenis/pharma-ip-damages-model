@@ -110,6 +110,10 @@ export function calculateButForWorld(
 
 /**
  * Calculate lost profits for each year
+ *
+ * Note: marketSize is total market revenue (not units), so we don't multiply by price again.
+ * Lost Revenue = Market Size × Share Differential
+ * Lost Profits = Lost Revenue × Margin
  */
 export function calculateLostProfits(
   yearlyData: YearlyMarketData[]
@@ -118,15 +122,17 @@ export function calculateLostProfits(
   let total = 0;
 
   for (const data of yearlyData) {
-    // Lost Sales Volume = Market Size × (But-For Share - Actual Share)
-    const lostVolume = data.marketSize * (data.plaintiffButForShare - data.plaintiffActualShare);
+    // Lost Revenue = Market Size (revenue) × (But-For Share - Actual Share)
+    const lostRevenue = data.marketSize * (data.plaintiffButForShare - data.plaintiffActualShare);
 
-    // Lost Profits from Lost Volume = Lost Volume × But-For Price × Margin
-    const lostProfitsVolume = lostVolume * data.plaintiffButForPrice * data.plaintiffMargin;
+    // Lost Profits = Lost Revenue × Margin
+    const lostProfitsVolume = lostRevenue * data.plaintiffMargin;
 
-    // Price Erosion = Actual Volume × (But-For Price - Actual Price) × Margin
-    const actualVolume = data.marketSize * data.plaintiffActualShare;
-    const priceErosion = actualVolume * (data.plaintiffButForPrice - data.plaintiffActualPrice) * data.plaintiffMargin;
+    // Price Erosion = Actual Revenue × Price Erosion % × Margin
+    // Price erosion % = (But-For Price - Actual Price) / But-For Price
+    const actualRevenue = data.marketSize * data.plaintiffActualShare;
+    const priceErosionPct = (data.plaintiffButForPrice - data.plaintiffActualPrice) / data.plaintiffButForPrice;
+    const priceErosion = actualRevenue * priceErosionPct * data.plaintiffMargin;
 
     const yearTotal = lostProfitsVolume + priceErosion;
     yearlyLostProfits.push({
@@ -249,8 +255,8 @@ export function calculateFullLostProfits(
   // Step 2: Calculate Lost Profits
   const { yearlyLostProfits, total: totalLostProfits } = calculateLostProfits(yearlyData);
 
-  // Step 3: Calculate total volumes
-  const totalLostVolume = yearlyData.reduce(
+  // Step 3: Calculate total lost revenue
+  const totalLostRevenue = yearlyData.reduce(
     (sum, d) => sum + d.marketSize * (d.plaintiffButForShare - d.plaintiffActualShare),
     0
   );
@@ -300,21 +306,20 @@ export function calculateFullLostProfits(
         id: `year-${d.year}`,
         label: `Year ${d.year}`,
         inputs: [
-          { name: 'Market Size', value: d.marketSize },
+          { name: 'Market Size (Revenue)', value: d.marketSize },
           { name: 'But-For Share', value: d.plaintiffButForShare },
           { name: 'Actual Share', value: d.plaintiffActualShare },
-          { name: 'Lost Volume', value: d.marketSize * (d.plaintiffButForShare - d.plaintiffActualShare) },
+          { name: 'Lost Revenue', value: d.marketSize * (d.plaintiffButForShare - d.plaintiffActualShare) },
         ],
-        result: d.marketSize * (d.plaintiffButForShare - d.plaintiffActualShare) * d.plaintiffButForPrice * d.plaintiffMargin,
+        result: d.marketSize * (d.plaintiffButForShare - d.plaintiffActualShare) * d.plaintiffMargin,
       })),
     },
     {
       id: 'lost-profits-calc',
       label: 'Lost Profits Calculation',
-      formula: 'Lost Profits = Lost Volume × Price × Incremental Margin',
+      formula: 'Lost Profits = Lost Revenue × Incremental Margin',
       inputs: [
-        { name: 'Total Lost Volume', value: totalLostVolume },
-        { name: 'But-For Price', value: inputs.prices.butForPrice.base },
+        { name: 'Total Lost Revenue', value: totalLostRevenue },
         { name: 'Incremental Margin', value: inputs.competitors.plaintiffIncrementalMargin.base },
       ],
       result: totalLostProfits - totalPriceErosion,
@@ -323,11 +328,11 @@ export function calculateFullLostProfits(
     {
       id: 'price-erosion',
       label: 'Price Erosion Damages',
-      formula: 'Price Erosion = Actual Volume × (But-For Price - Actual Price) × Margin',
+      formula: 'Price Erosion = Actual Revenue × Price Erosion % × Margin',
       inputs: [
         { name: 'But-For Price', value: inputs.prices.butForPrice.base },
         { name: 'Actual Price', value: inputs.prices.plaintiffPrice.base },
-        { name: 'Price Reduction %', value: `${((1 - inputs.prices.plaintiffPrice.base / inputs.prices.butForPrice.base) * 100).toFixed(1)}%` },
+        { name: 'Price Erosion %', value: `${((1 - inputs.prices.plaintiffPrice.base / inputs.prices.butForPrice.base) * 100).toFixed(1)}%` },
       ],
       result: totalPriceErosion,
       notes: 'Price erosion occurs when infringer forces patentee to lower prices to compete.',
@@ -358,7 +363,7 @@ export function calculateFullLostProfits(
 
   return {
     totalLostProfits: totalLostProfits - totalPriceErosion,
-    lostSalesVolume: totalLostVolume,
+    lostSalesVolume: totalLostRevenue,
     priceErosionDamages: totalPriceErosion,
     yearlyBreakdown,
     calculationSteps,
