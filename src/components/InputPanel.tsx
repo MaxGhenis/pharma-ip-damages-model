@@ -1,14 +1,18 @@
 import React from 'react';
 import { DamagesInputs } from '../types';
+import { SourceCitation } from '../types/validation';
 import { ExpandableSection } from './ExpandableSection';
 import { TripleInput, NumberInput } from './InputField';
 
 interface InputPanelProps {
   inputs: DamagesInputs;
   onChange: (inputs: DamagesInputs) => void;
+  sources?: Map<string, SourceCitation>;
+  onSourceChange?: (path: string, source: SourceCitation | undefined) => void;
 }
 
-export function InputPanel({ inputs, onChange }: InputPanelProps) {
+export function InputPanel({ inputs, onChange, sources, onSourceChange }: InputPanelProps) {
+  const getSource = (path: string) => sources?.get(path);
   return (
     <div className="space-y-4">
       <ExpandableSection title="Market Parameters" defaultOpen>
@@ -21,6 +25,9 @@ export function InputPanel({ inputs, onChange }: InputPanelProps) {
             }
             format="currency"
             helpText="Annual US market size in dollars"
+            inputPath="market.totalMarketSize"
+            source={getSource('market.totalMarketSize')}
+            onSourceChange={onSourceChange}
           />
           <TripleInput
             label="Market Growth Rate"
@@ -30,6 +37,9 @@ export function InputPanel({ inputs, onChange }: InputPanelProps) {
             }
             format="percent"
             helpText="Annual growth rate"
+            inputPath="market.marketGrowthRate"
+            source={getSource('market.marketGrowthRate')}
+            onSourceChange={onSourceChange}
           />
           <NumberInput
             label="Infringement Start Year"
@@ -83,6 +93,9 @@ export function InputPanel({ inputs, onChange }: InputPanelProps) {
             }
             format="percent"
             helpText="Plaintiff's share absent infringement"
+            inputPath="competitors.plaintiffButForShare"
+            source={getSource('competitors.plaintiffButForShare')}
+            onSourceChange={onSourceChange}
           />
           <TripleInput
             label="Plaintiff Actual Share"
@@ -95,6 +108,9 @@ export function InputPanel({ inputs, onChange }: InputPanelProps) {
             }
             format="percent"
             helpText="Plaintiff's actual share with infringement"
+            inputPath="competitors.plaintiffActualShare"
+            source={getSource('competitors.plaintiffActualShare')}
+            onSourceChange={onSourceChange}
           />
           <TripleInput
             label="Defendant Actual Share"
@@ -107,6 +123,9 @@ export function InputPanel({ inputs, onChange }: InputPanelProps) {
             }
             format="percent"
             helpText="Defendant's infringing market share"
+            inputPath="competitors.defendantActualShare"
+            source={getSource('competitors.defendantActualShare')}
+            onSourceChange={onSourceChange}
           />
           <TripleInput
             label="Other Competitors Share"
@@ -136,6 +155,9 @@ export function InputPanel({ inputs, onChange }: InputPanelProps) {
             }
             format="percent"
             helpText="Gross profit margin"
+            inputPath="competitors.plaintiffGrossMargin"
+            source={getSource('competitors.plaintiffGrossMargin')}
+            onSourceChange={onSourceChange}
           />
           <TripleInput
             label="Plaintiff Incremental Margin"
@@ -148,6 +170,9 @@ export function InputPanel({ inputs, onChange }: InputPanelProps) {
             }
             format="percent"
             helpText="Margin on incremental lost sales (excludes fixed costs)"
+            inputPath="competitors.plaintiffIncrementalMargin"
+            source={getSource('competitors.plaintiffIncrementalMargin')}
+            onSourceChange={onSourceChange}
           />
           <TripleInput
             label="Defendant Gross Margin"
@@ -160,6 +185,9 @@ export function InputPanel({ inputs, onChange }: InputPanelProps) {
             }
             format="percent"
             helpText="For royalty base calculation"
+            inputPath="competitors.defendantGrossMargin"
+            source={getSource('competitors.defendantGrossMargin')}
+            onSourceChange={onSourceChange}
           />
         </div>
       </ExpandableSection>
@@ -201,6 +229,9 @@ export function InputPanel({ inputs, onChange }: InputPanelProps) {
             }
             format="percent"
             helpText="Price reduction due to competition"
+            inputPath="prices.priceErosionPercent"
+            source={getSource('prices.priceErosionPercent')}
+            onSourceChange={onSourceChange}
           />
         </div>
       </ExpandableSection>
@@ -215,6 +246,9 @@ export function InputPanel({ inputs, onChange }: InputPanelProps) {
             }
             format="percent"
             helpText="Combined validity × infringement probability"
+            inputPath="royalty.patentStrength"
+            source={getSource('royalty.patentStrength')}
+            onSourceChange={onSourceChange}
           />
           <TripleInput
             label="Technology Contribution"
@@ -224,6 +258,9 @@ export function InputPanel({ inputs, onChange }: InputPanelProps) {
             }
             format="percent"
             helpText="Portion of product value from patented tech"
+            inputPath="royalty.technologyContribution"
+            source={getSource('royalty.technologyContribution')}
+            onSourceChange={onSourceChange}
           />
           <TripleInput
             label="Profit Split"
@@ -233,6 +270,9 @@ export function InputPanel({ inputs, onChange }: InputPanelProps) {
             }
             format="percent"
             helpText="Plaintiff's share of attributable profits"
+            inputPath="royalty.profitSplit"
+            source={getSource('royalty.profitSplit')}
+            onSourceChange={onSourceChange}
           />
           <TripleInput
             label="Discount Rate per Round"

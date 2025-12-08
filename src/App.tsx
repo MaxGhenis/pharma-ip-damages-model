@@ -39,7 +39,19 @@ function App() {
   });
   const [showReport, setShowReport] = useState(false);
   const [showValidation, setShowValidation] = useState(false);
-  const [inputSources] = useState<Map<string, SourceCitation>>(new Map());
+  const [inputSources, setInputSources] = useState<Map<string, SourceCitation>>(new Map());
+
+  const handleSourceChange = useCallback((path: string, source: SourceCitation | undefined) => {
+    setInputSources(prev => {
+      const next = new Map(prev);
+      if (source) {
+        next.set(path, source);
+      } else {
+        next.delete(path);
+      }
+      return next;
+    });
+  }, []);
 
   const handleScenarioChange = useCallback((newScenario: DemoScenario) => {
     setScenario(newScenario);
@@ -168,7 +180,12 @@ function App() {
           <div className="lg:col-span-1">
             <div className="sticky top-4">
               <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Model Inputs</h2>
-              <InputPanel inputs={inputs} onChange={setInputs} />
+              <InputPanel
+                inputs={inputs}
+                onChange={setInputs}
+                sources={inputSources}
+                onSourceChange={handleSourceChange}
+              />
             </div>
           </div>
 

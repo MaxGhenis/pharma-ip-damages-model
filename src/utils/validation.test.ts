@@ -317,3 +317,104 @@ describe('CONVERGENCE_THRESHOLDS', () => {
     expect(CONVERGENCE_THRESHOLDS.divergent).toBe(Infinity);
   });
 });
+
+describe('100% Daubert Compliance', () => {
+  it('should achieve valid status when all inputs are sourced and reasonable', () => {
+    const inputs = blockbusterDrugScenario.inputs;
+
+    // Create sources for all validated inputs
+    const sources = new Map([
+      ['market.totalMarketSize', {
+        sourceType: 'market_data' as const,
+        document: 'IQVIA US Biologics Market Report 2024',
+        location: 'Page 23, Table 4.1',
+      }],
+      ['market.marketGrowthRate', {
+        sourceType: 'industry_report' as const,
+        document: 'EvaluatePharma World Preview 2024',
+        location: 'Section 3.2',
+      }],
+      ['competitors.plaintiffGrossMargin', {
+        sourceType: 'sec_filing' as const,
+        document: 'AbbVie 2023 Form 10-K',
+        location: 'Page 67, Note 14',
+      }],
+      ['competitors.plaintiffIncrementalMargin', {
+        sourceType: 'expert_opinion' as const,
+        document: 'Expert Report of Dr. Smith',
+        location: 'Paragraph 45',
+        justification: 'Based on standard pharmaceutical cost allocation methodology',
+      }],
+      ['competitors.defendantGrossMargin', {
+        sourceType: 'court_record' as const,
+        document: 'Defendant Interrogatory Response',
+        location: 'Response to Interrogatory No. 15',
+        batesNumber: 'DEF-001234',
+      }],
+      ['competitors.plaintiffButForShare', {
+        sourceType: 'expert_opinion' as const,
+        document: 'Expert Report of Dr. Smith',
+        location: 'Section 5.2',
+        justification: 'Based on Panduit factor analysis showing no acceptable substitutes',
+      }],
+      ['competitors.plaintiffActualShare', {
+        sourceType: 'market_data' as const,
+        document: 'Symphony Health Claims Data 2020-2023',
+        location: 'Market Share Analysis, Exhibit B',
+      }],
+      ['competitors.defendantActualShare', {
+        sourceType: 'market_data' as const,
+        document: 'Symphony Health Claims Data 2020-2023',
+        location: 'Market Share Analysis, Exhibit B',
+      }],
+      ['royalty.patentStrength', {
+        sourceType: 'expert_opinion' as const,
+        document: 'Expert Report of Dr. Jones (Technical Expert)',
+        location: 'Section 7',
+        justification: 'Based on claim construction and prior art analysis',
+      }],
+      ['royalty.technologyContribution', {
+        sourceType: 'expert_opinion' as const,
+        document: 'Expert Report of Dr. Jones (Technical Expert)',
+        location: 'Section 8',
+        justification: 'Based on patent claim mapping to product features',
+      }],
+      ['royalty.profitSplit', {
+        sourceType: 'comparable_license' as const,
+        document: 'ktMINE Royalty Rate Database',
+        location: 'Biologics Licensing Agreements 2018-2023',
+      }],
+      ['prices.priceErosionPercent', {
+        sourceType: 'academic_study' as const,
+        document: 'Grabowski et al., "Biosimilar Entry and Market Dynamics"',
+        location: 'Table 3, Journal of Health Economics (2023)',
+      }],
+    ]);
+
+    const results = calculateDamages(inputs, {
+      includeLostProfits: true,
+      includeReasonableRoyalty: true,
+      includeRubinstein: true,
+      includeShapley: true,
+      includeSCurve: true,
+      includeTradeSecret: false,
+      runMonteCarlo: true,
+      runSensitivity: true,
+      monteCarloIterations: 1000,
+    });
+
+    const report = generateValidationReport(inputs, results, sources);
+
+    // Should have all inputs documented
+    expect(report.daubertFactors.sufficientBasis.documentedInputs).toBe(
+      report.daubertFactors.sufficientBasis.totalInputs
+    );
+    expect(report.daubertFactors.sufficientBasis.score).toBe(100);
+
+    // Methods should be valid (we use accepted methodologies)
+    expect(report.daubertFactors.reliableMethods.score).toBe(100);
+
+    // Overall status should be valid
+    expect(report.overallStatus).toBe('valid');
+  });
+});
