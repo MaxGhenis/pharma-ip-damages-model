@@ -8,6 +8,7 @@ import { ResultsSummary } from './components/ResultsSummary';
 import { ExpandableSection } from './components/ExpandableSection';
 import { CalculationStepsList } from './components/CalculationStep';
 import { ReportView } from './components/ReportView';
+import { ValidationReportView } from './components/ValidationReport';
 import {
   YearlyDamagesChart,
   MonteCarloChart,
@@ -17,6 +18,8 @@ import {
 import { formatCurrency } from './utils/uncertainty';
 import { generateReportContent } from './utils/reportGenerator';
 import { buildReportData } from './utils/reportDataBuilder';
+import { generateValidationReport } from './utils/validation';
+import { ValidationReport, SourceCitation } from './types/validation';
 import './index.css';
 
 function App() {
@@ -35,6 +38,20 @@ function App() {
     monteCarloIterations: 5000,
   });
   const [showReport, setShowReport] = useState(false);
+  const [showValidation, setShowValidation] = useState(false);
+  const [inputSources, setInputSources] = useState<Map<string, SourceCitation>>(new Map());
+
+  const handleSourceChange = useCallback((path: string, source: SourceCitation | undefined) => {
+    setInputSources(prev => {
+      const next = new Map(prev);
+      if (source) {
+        next.set(path, source);
+      } else {
+        next.delete(path);
+      }
+      return next;
+    });
+  }, []);
 
   const handleScenarioChange = useCallback((newScenario: DemoScenario) => {
     setScenario(newScenario);
@@ -69,6 +86,11 @@ function App() {
     return generateReportContent(reportData);
   }, [results, inputs, scenario.name]);
 
+  const validationReport: ValidationReport | null = useMemo(() => {
+    if (!results) return null;
+    return generateValidationReport(inputs, results, inputSources);
+  }, [results, inputs, inputSources]);
+
   const handlePrint = useCallback(() => {
     window.print();
   }, []);
@@ -80,6 +102,16 @@ function App() {
         report={reportContent}
         onClose={() => setShowReport(false)}
         onPrint={handlePrint}
+      />
+    );
+  }
+
+  // Show validation report if active
+  if (showValidation && validationReport) {
+    return (
+      <ValidationReportView
+        report={validationReport}
+        onClose={() => setShowValidation(false)}
       />
     );
   }
@@ -148,7 +180,12 @@ function App() {
           <div className="lg:col-span-1">
             <div className="sticky top-4">
               <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Model Inputs</h2>
-              <InputPanel inputs={inputs} onChange={setInputs} />
+              <InputPanel
+                inputs={inputs}
+                onChange={setInputs}
+                sources={inputSources}
+                onSourceChange={handleSourceChange}
+              />
             </div>
           </div>
 
@@ -167,12 +204,33 @@ function App() {
                 <section>
                   <div className="flex justify-between items-center mb-4">
                     <h2 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>Damages Summary</h2>
-                    <button
-                      onClick={() => setShowReport(true)}
-                      className="btn-primary"
-                    >
-                      Generate Report
-                    </button>
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => setShowValidation(true)}
+                        className="px-4 py-2 rounded text-sm font-medium transition-colors"
+                        style={{
+                          background: validationReport?.overallStatus === 'valid'
+                            ? 'rgba(52, 211, 153, 0.15)'
+                            : validationReport?.overallStatus === 'needs_review'
+                            ? 'rgba(251, 191, 36, 0.15)'
+                            : 'rgba(248, 113, 113, 0.15)',
+                          color: validationReport?.overallStatus === 'valid'
+                            ? 'var(--accent-emerald)'
+                            : validationReport?.overallStatus === 'needs_review'
+                            ? 'var(--accent-gold)'
+                            : 'var(--accent-rose)',
+                          border: '1px solid currentColor',
+                        }}
+                      >
+                        Daubert Validation
+                      </button>
+                      <button
+                        onClick={() => setShowReport(true)}
+                        className="btn-primary"
+                      >
+                        Generate Report
+                      </button>
+                    </div>
                   </div>
                   <ResultsSummary
                     summary={results.summary}
